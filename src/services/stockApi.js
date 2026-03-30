@@ -9,9 +9,15 @@ const RANGE_TO_INTERVAL = {
   '5y': '1mo',
 }
 
+const YAHOO_BASE = 'https://query1.finance.yahoo.com'
+const CORS_PROXY = 'https://corsproxy.io/?'
+
 export async function fetchStockData(symbol, range = '1mo') {
   const interval = RANGE_TO_INTERVAL[range] || '1d'
-  const url = `/api/yahoo/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}&includePrePost=false`
+  const path = `/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}&includePrePost=false`
+  const url = import.meta.env.PROD
+    ? `${CORS_PROXY}${encodeURIComponent(YAHOO_BASE + path)}`
+    : `/api/yahoo${path}`
 
   const res = await fetch(url)
   if (!res.ok) {
